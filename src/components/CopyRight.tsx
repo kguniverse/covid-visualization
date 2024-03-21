@@ -6,10 +6,10 @@ export default function Copyright() {
     return (
         <Typography variant="body2" color="text.secondary" align="center">
             {'Copyright © '}
-            <MuiLink color="inherit" href="https://mui.com/">
+            <MuiLink color="inherit" href="https://github.com/kguniverse">
                 ECE656 Capstone Project
             </MuiLink>{' '}
-            {new Date().getFullYear()}.
+            {new Date().getFullYear()}
         </Typography>
     );
 }

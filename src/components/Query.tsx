@@ -1,7 +1,9 @@
 "use client"
 import { Stack, Button, Box, Divider, InputLabel, MenuItem, SelectChangeEvent, Slider } from "@mui/material";
-import { FormControl, FormGroup, Select } from "@mui/material";
+import { FormControl, FormGroup, Select, Grid } from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers";
 import { useEffect, useState } from "react";
+import dayjs, { Dayjs } from 'dayjs';
 
 //us_states
 const state_county_index: { [key: string]: string[] } = {
@@ -66,82 +68,118 @@ const CountyQueriesPanel = () => {
     const [state, setState] = useState("All");
 
     return (
-        <Stack
-            direction={"row"}>
-            <Box
-                minWidth={240}>
-                <FormControl fullWidth>
-                    <InputLabel id="state-select-state-label">State</InputLabel>
-                    <Select
-                        labelId="state-select-state"
-                        label="Select State"
-                        value={state}
-                        onChange={(event) => setState(event.target.value as string)}
-                    >
-                        <MenuItem value="All">All</MenuItem>
-                        {Object.keys(state_county_index).map((state, index) => {
-                            return <MenuItem key={index} value={state}>{state}</MenuItem>
-                        })}
-                    </Select>
-                </FormControl>
-            </Box>
-            <Box minWidth={240}>
-                <FormControl fullWidth>
-                    <InputLabel id="county-select-county-label">County</InputLabel>
-                    <Select
-                        labelId="county-select-county"
-                        label="Select County"
-                        defaultValue={"All"}
-                    >
-                        <MenuItem value="All">All</MenuItem>
-                        {state === "All" ? null :
-                            state_county_index[state].map((county, index) => {
-                                return <MenuItem key={index} value={county}>{county}</MenuItem>
+        <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+                <Box minWidth={240} mb={2}>
+                    <FormControl fullWidth>
+                        <InputLabel id="state-select-state-label">State</InputLabel>
+                        <Select
+                            labelId="state-select-state"
+                            label="Select State"
+                            value={state}
+                            onChange={(event) => setState(event.target.value as string)}
+                        >
+                            <MenuItem value="All">All</MenuItem>
+                            {Object.keys(state_county_index).map((state, index) => {
+                                return <MenuItem key={index} value={state}>{state}</MenuItem>
                             })}
-                    </Select>
-                </FormControl>
-            </Box>
-        </Stack >
-
+                        </Select>
+                    </FormControl>
+                </Box>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+                <Box minWidth={240} mb={2}>
+                    <FormControl fullWidth>
+                        <InputLabel id="county-select-county-label">County</InputLabel>
+                        <Select
+                            labelId="county-select-county"
+                            label="Select County"
+                            defaultValue={"All"}
+                        >
+                            <MenuItem value="All">All</MenuItem>
+                            {state === "All" ? null :
+                                state_county_index[state].map((county, index) => {
+                                    return <MenuItem key={index} value={county}>{county}</MenuItem>
+                                })}
+                        </Select>
+                    </FormControl>
+                </Box>
+            </Grid>
+        </Grid>
     );
 }
 
 const StateQueriesPanel = () => {
     const [state, setState] = useState("All");
     return (
-        <FormControl fullWidth>
-            <InputLabel id="state-select-state-label">State</InputLabel>
-            <Select
-                labelId="state-select-state"
-                label="Select State"
-                value={state}
-                onChange={(event: SelectChangeEvent) => setState(event.target.value as string)}
-            >
-                <MenuItem value="All">All</MenuItem>
-                {Object.keys(state_county_index).map((state, index) => {
-                    return <MenuItem key={index} value={state}>{state}</MenuItem>
-                })}
-            </Select>
-        </FormControl>
+        <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+                <Box minWidth={240} mb={2}>
+                    <FormControl fullWidth>
+                        <InputLabel id="state-select-state-label">State</InputLabel>
+                        <Select
+                            labelId="state-select-state"
+                            label="Select State"
+                            value={state}
+                            onChange={(event: SelectChangeEvent) => setState(event.target.value as string)}
+                        >
+                            <MenuItem value="All">All</MenuItem>
+                            {Object.keys(state_county_index).map((state, index) => {
+                                return <MenuItem key={index} value={state}>{state}</MenuItem>
+                            })}
+                        </Select>
+                    </FormControl>
+                </Box>
+            </Grid>
+        </Grid>
     );
 }
 
 const TimeQueriesPanel = () => {
-    const [valueRange, setValueRange] = useState<number[]>([0, 100]);
+    const dateBegin: dayjs.Dayjs = dayjs("2020-01-01");
+    const dateEnd: dayjs.Dayjs = dayjs("2023-12-31");
+    const totalDays: number = dateEnd.diff(dateBegin, 'day');
+    const [valueRange, setValueRange] = useState<number[]>([0, totalDays]);
+
+    function valueToDate(value: number): dayjs.Dayjs {
+        return dateBegin.add(value, 'day');
+    }
 
     return (
-        <Box
-            minWidth={"100%"}>
-            <h2>Time Range</h2>
-            <Box
-                sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <p>From: {valueRange[0]}</p>
-                <p>To: {valueRange[1]}</p>
-                <Slider
-                    value={valueRange}
-                    onChange={(event, newValue) => { setValueRange(newValue as number[]) }} />
-            </Box>
-        </Box>
+        <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+                <h2>Time Range</h2>
+                <Grid item xs={12}>
+                    <DatePicker
+                        label={"From"}
+                        value={valueToDate(valueRange[0])}
+                        onChange={
+                            (date: Dayjs | null) => {
+                                if (date) {
+                                    setValueRange([date.diff(dateBegin, 'day'), valueRange[1]]);
+                                }
+                            }
+                        } />
+                    <DatePicker
+                        label={"To"}
+                        value={valueToDate(valueRange[1])}
+                        onChange={(date: Dayjs | null) => {
+                            if (date) {
+                                setValueRange([valueRange[0], date.diff(dateBegin, 'day')]);
+                            }
+                        }}
+                    />
+                </Grid>
+                <Grid>
+                    <Slider
+                        min={0}
+                        max={totalDays}
+                        value={valueRange}
+                        step={1}
+                        onChange={(event, newValue) => { setValueRange(newValue as number[]) }} />
+                </Grid>
+            </Grid >
+        </Grid >
     );
 }
 
@@ -150,27 +188,32 @@ export default function Query() {
     const [table, setTable] = useState("none");
 
     return (
-        <Stack
-            divider={<Divider orientation="horizontal" flexItem />}
-            spacing={2}
-            sx={{ alignItems: 'center' }}
-            minWidth={"100%"}
-        >
-            <h1>Query</h1>
-            <Box sx={{ minWidth: 240 }}>
-                <FormControl>
-                    <InputLabel>Choose Table</InputLabel>
-                    <Select
-                        onChange={(event) => { setTable(event.target.value as string) }}>
-                        <MenuItem value="county">County</MenuItem>
-                        <MenuItem value="state">State</MenuItem>
-                    </Select>
-                </FormControl>
-            </Box>
-            <TimeQueriesPanel />
-            {table === "county" && <CountyQueriesPanel />}
-            {table === "state" && <StateQueriesPanel />}
-            <Button variant="contained" color="primary">Submit</Button>
-        </Stack>
+        <Grid container spacing={2}>
+            <Grid item xs={12}>
+                <h1>Query</h1>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+                <Box sx={{ minWidth: 240 }} mb={2}>
+                    <FormControl fullWidth>
+                        <InputLabel>Choose Table</InputLabel>
+                        <Select
+                            onChange={(event) => { setTable(event.target.value as string) }}>
+                            <MenuItem value="county">County</MenuItem>
+                            <MenuItem value="state">State</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Box>
+            </Grid>
+            <Grid item xs={12}>
+                <TimeQueriesPanel />
+            </Grid>
+            <Grid item xs={12}>
+                {table === "county" && <CountyQueriesPanel />}
+                {table === "state" && <StateQueriesPanel />}
+            </Grid>
+            <Grid item xs={12}>
+                <Button variant="contained" color="primary">Submit</Button>
+            </Grid>
+        </Grid>
     );
 }
