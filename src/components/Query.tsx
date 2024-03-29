@@ -4,6 +4,7 @@ import { FormControl, FormGroup, Select, Grid } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { useEffect, useState } from "react";
 import dayjs, { Dayjs } from 'dayjs';
+import StateTable from "./StateTable";
 
 //us_states
 const state_county_index: { [key: string]: string[] } = {
@@ -137,7 +138,7 @@ const StateQueriesPanel = () => {
 
 const TimeQueriesPanel = () => {
     const dateBegin: dayjs.Dayjs = dayjs("2020-01-01");
-    const dateEnd: dayjs.Dayjs = dayjs("2023-12-31");
+    const dateEnd: dayjs.Dayjs = dayjs("2023-3-23");
     const totalDays: number = dateEnd.diff(dateBegin, 'day');
     const [valueRange, setValueRange] = useState<number[]>([0, totalDays]);
 
@@ -187,6 +188,9 @@ const TimeQueriesPanel = () => {
 export default function Query() {
     const [table, setTable] = useState("none");
 
+    const [showStateTable, setShowStateTable] = useState(false);
+
+
     return (
         <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -205,14 +209,20 @@ export default function Query() {
                 </Box>
             </Grid>
             <Grid item xs={12}>
-                <TimeQueriesPanel />
-            </Grid>
-            <Grid item xs={12}>
                 {table === "county" && <CountyQueriesPanel />}
                 {table === "state" && <StateQueriesPanel />}
             </Grid>
             <Grid item xs={12}>
-                <Button variant="contained" color="primary">Submit</Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => { setShowStateTable(true) }}
+                >
+                    Submit
+                </Button>
+            </Grid>
+            <Grid item xs={12}>
+                {showStateTable && <StateTable />}
             </Grid>
         </Grid>
     );
