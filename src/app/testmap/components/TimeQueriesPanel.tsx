@@ -1,18 +1,26 @@
 'use client'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Grid, Slider } from '@mui/material';
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from 'dayjs';
 
-const TimeQueriesPanel = () => {
-    const dateBegin: dayjs.Dayjs = dayjs("2020-01-01");
-    const dateEnd: dayjs.Dayjs = dayjs("2023-3-23");
+const TimeQueriesPanel = (
+    { dateBegin, dateEnd, setDate }:
+        {
+            dateBegin: dayjs.Dayjs,
+            dateEnd: dayjs.Dayjs,
+            setDate: React.Dispatch<React.SetStateAction<dayjs.Dayjs>>
+        }) => {
     const totalDays: number = dateEnd.diff(dateBegin, 'day');
     const [valueDate, setValueDate] = useState<number>(0);
 
     function valueToDate(value: number): dayjs.Dayjs {
         return dateBegin.add(value, 'day');
     }
+
+    useEffect(() => {
+        setDate(dateBegin.add(valueDate, 'day'));
+    }, [valueDate]);
 
     return (
         <Grid container spacing={2}>

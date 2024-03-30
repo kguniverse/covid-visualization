@@ -33,7 +33,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "src/app/dashboard/page.tsx"
-  ],
+, "src/app/testmap/components/USmap.jsx"  ],
   "exclude": [
     "node_modules"
   ]
